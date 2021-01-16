@@ -1,48 +1,24 @@
 require "test_helper"
 
 class CatsControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    @cat = cats(:one)
+  test "query cat update" do
+    cat = Cat.create(name: "Whiskers")
+    put "/cats/query/#{cat.id}"
+
+    assert_equal "Whiskers", cat.reload.name # Cat not updated
   end
 
-  test "should get index" do
-    get cats_url
-    assert_response :success
+  test "local var cat update" do
+    cat = Cat.create(name: "Whiskers")
+    put "/cats/local/#{cat.id}"
+
+    assert_equal "Tabby", cat.reload.name # Cat updated
   end
 
-  test "should get new" do
-    get new_cat_url
-    assert_response :success
-  end
+  test "memoized cat update" do
+    cat = Cat.create(name: "Whiskers")
+    put "/cats/memo/#{cat.id}"
 
-  test "should create cat" do
-    assert_difference('Cat.count') do
-      post cats_url, params: { cat: { name: @cat.name } }
-    end
-
-    assert_redirected_to cat_url(Cat.last)
-  end
-
-  test "should show cat" do
-    get cat_url(@cat)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_cat_url(@cat)
-    assert_response :success
-  end
-
-  test "should update cat" do
-    patch cat_url(@cat), params: { cat: { name: @cat.name } }
-    assert_redirected_to cat_url(@cat)
-  end
-
-  test "should destroy cat" do
-    assert_difference('Cat.count', -1) do
-      delete cat_url(@cat)
-    end
-
-    assert_redirected_to cats_url
+    assert_equal "Tabby", cat.reload.name # Cat updated
   end
 end

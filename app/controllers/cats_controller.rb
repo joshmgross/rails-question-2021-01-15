@@ -1,74 +1,37 @@
 class CatsController < ApplicationController
-  before_action :set_cat, only: [:show, :edit, :update, :destroy]
-
-  # GET /cats
-  # GET /cats.json
-  def index
-    @cats = Cat.all
-  end
-
-  # GET /cats/1
-  # GET /cats/1.json
   def show
+    cat = Cat.find(params[:id])
   end
 
-  # GET /cats/new
-  def new
-    @cat = Cat.new
+  def update_with_query
+    find_cat.name = "Tabby" # Won't work
+    find_cat.save # No changes to save
+
+    redirect_to find_cat
   end
 
-  # GET /cats/1/edit
-  def edit
+  def update_with_local_var
+    cat_to_update = find_cat
+    cat_to_update.name = "Tabby" # Will work
+    cat_to_update.save # Changes to save
+
+    redirect_to cat_to_update
   end
 
-  # POST /cats
-  # POST /cats.json
-  def create
-    @cat = Cat.new(cat_params)
+  def update_with_memoized
+    memoized_cat.name = "Tabby" # Will work
+    memoized_cat.save # Changes to save
 
-    respond_to do |format|
-      if @cat.save
-        format.html { redirect_to @cat, notice: 'Cat was successfully created.' }
-        format.json { render :show, status: :created, location: @cat }
-      else
-        format.html { render :new }
-        format.json { render json: @cat.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /cats/1
-  # PATCH/PUT /cats/1.json
-  def update
-    respond_to do |format|
-      if @cat.update(cat_params)
-        format.html { redirect_to @cat, notice: 'Cat was successfully updated.' }
-        format.json { render :show, status: :ok, location: @cat }
-      else
-        format.html { render :edit }
-        format.json { render json: @cat.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /cats/1
-  # DELETE /cats/1.json
-  def destroy
-    @cat.destroy
-    respond_to do |format|
-      format.html { redirect_to cats_url, notice: 'Cat was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to memoized_cat
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_cat
-      @cat = Cat.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def cat_params
-      params.fetch(:cat, {})
-    end
+  def find_cat
+    Cat.find(params[:id])
+  end
+
+  def memoized_cat
+    @cat ||= Cat.find(params[:id])
+  end
 end

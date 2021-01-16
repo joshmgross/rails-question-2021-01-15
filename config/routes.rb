@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
-  resources :cats
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :cats, only: [:show]
+  put "/cats/query/:id", to: "cats#update_with_query"
+  put "/cats/local/:id", to: "cats#update_with_local_var"
+  put "/cats/memo/:id",  to: "cats#update_with_memoized"
 end
